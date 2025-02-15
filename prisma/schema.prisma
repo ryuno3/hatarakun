@@ -1,0 +1,63 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  firstName String
+  lastName  String
+  position Position
+  area Area
+  posts Post[]
+  overtimeRecords Overtime[]
+  absentDays Int //月間
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+}
+
+enum Position {
+  MANAGER
+  STAFF
+}
+
+enum Area {
+  SHIPPING
+  UNLOADING
+  RECEIVING
+  OFFICE
+  C
+}
+
+model Overtime {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  date DateTime
+  hours Float //30分単位(ex: 1.5 → 1時間30分)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Post {
+  id String @id @default(uuid())
+  title String?
+  content String
+  category Category
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Category {
+  NOTICE
+  WARNING
+}
